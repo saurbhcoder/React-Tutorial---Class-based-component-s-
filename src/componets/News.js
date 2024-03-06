@@ -5,18 +5,18 @@ import NewsItem from './NewsItem'
 import propTypes from 'prop-types';
 
 export default class News extends Component {
-    
+
     static defaultProps = {
-        country : "",
-        category : "general",
+        country: "",
+        category: "general",
     }
-    
+
     static propTypes = {
-        country : propTypes.string,
-        category : propTypes.string
+        country: propTypes.string,
+        category: propTypes.string
     }
-    
-    
+
+
     constructor() {
         super();
         console.log('construtor');
@@ -24,53 +24,54 @@ export default class News extends Component {
             articles: [],
             loading: false,
             page: 1,
-            totalResult : 1,
-            nextDisabled : false
+            totalResult: 1,
+            nextDisabled: false,
+
         }
     }
 
     async componentDidMount() {
         let data = await fetch(`https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=e5293d88a6d245d693060bf7c3442fce&page=${this.state.page}&pageSize=10`);
         let parseData = await data.json();
-        // console.log(parseData);
-        this.setState({ 
+        console.log(parseData);
+        this.setState({
             articles: parseData.articles,
-            totalResult : parseData.totalResults,
-            loading : true
-         });
+            totalResult: parseData.totalResults,
+            loading: true,
+            author: parseData.articles.author,
+            publishedAt: parseData.articles.publishedAt,
+        });
     }
 
     handelPrevClick = async () => {
         let data = await fetch(`https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=e5293d88a6d245d693060bf7c3442fce&page=${this.state.page}&pageSize=10`);
         let parseData = await data.json();
         console.log(parseData);
-        this.setState({ 
+        this.setState({
             articles: parseData.articles,
-            page : this.state.page - 1,
-            totalResult : parseData.totalResults,
-            nextDisabled : false,
-            loading : true
+            page: this.state.page - 1,
+            totalResult: parseData.totalResults,
+            nextDisabled: false,
+            loading: true
         });
     }
 
     handelNextClick = async () => {
-        if(this.state.page+1 > Math.ceil(this.state.totalResult / 10))
-        {
+        if (this.state.page + 1 > Math.ceil(this.state.totalResult / 10)) {
             this.setState({
-                nextDisabled : true,
+                nextDisabled: true,
             })
         }
-        else
-        {
-            let data = await fetch(`https://newsapi.org/v2/top-headlines?country=in&category=${this.props.category}&apiKey=e5293d88a6d245d693060bf7c3442fce&page=${this.state.page+1}&pageSize=10`);
+        else {
+            let data = await fetch(`https://newsapi.org/v2/top-headlines?country=in&category=${this.props.category}&apiKey=e5293d88a6d245d693060bf7c3442fce&page=${this.state.page + 1}&pageSize=10`);
             let parseData = await data.json();
             console.log(parseData);
-            this.setState({loading:true});
-            this.setState({ 
+            this.setState({ loading: true });
+            this.setState({
                 articles: parseData.articles,
-                page : this.state.page + 1,
-                totalResult : parseData.totalResults,
-                loading : true
+                page: this.state.page + 1,
+                totalResult: parseData.totalResults,
+                loading: true
             });
         }
     }
@@ -80,12 +81,19 @@ export default class News extends Component {
             <div>
                 <div className="container my-3">
                     <h1>News</h1>
-                    
+
                     {/* {this.state.loading && <Loading/>} */}
                     <div className='row'>
                         {this.state.loading && this.state.articles.map((element) => {
                             return <div className="col-md-4" key={element.urlToImage}>
-                                <NewsItem title={element.title ? element.title : ""} desc={element.description ? element.description : ""} imgUrl={element.urlToImage} newsUrl={element.url} />
+                                <NewsItem
+                                    title={element.title ? element.title : ""}
+                                    desc={element.description ? element.description : ""}
+                                    imgUrl={element.urlToImage ? element.urlToImage : "https://resize.indiatvnews.com/en/resize/newbucket/1200_-/2024/03/befunky-collage-51-1709617773.jpg"}
+                                    newsUrl={element.url}
+                                    author={element.author ? element.author : "cool"}
+                                    date={element.publishedAt ? element.publishedAt : "12-12-2024"}
+                                />
                             </div>
                         })}
                     </div>
