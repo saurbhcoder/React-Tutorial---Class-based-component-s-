@@ -1,7 +1,7 @@
 // import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import NewsItem from './NewsItem'
-// import Loading from './Loading';
+import Loading from './Loading';
 import propTypes from 'prop-types';
 
 export default class News extends Component {
@@ -31,19 +31,20 @@ export default class News extends Component {
     }
 
     async componentDidMount() {
+        this.setState({ loading: true });
         let data = await fetch(`https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=e5293d88a6d245d693060bf7c3442fce&page=${this.state.page}&pageSize=10`);
         let parseData = await data.json();
-        console.log(parseData);
         this.setState({
             articles: parseData.articles,
             totalResult: parseData.totalResults,
-            loading: true,
+            loading: false,
             author: parseData.articles.author,
             publishedAt: parseData.articles.publishedAt,
         });
     }
 
     handelPrevClick = async () => {
+        this.setState({ loading: true });
         let data = await fetch(`https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=e5293d88a6d245d693060bf7c3442fce&page=${this.state.page}&pageSize=10`);
         let parseData = await data.json();
         console.log(parseData);
@@ -52,11 +53,12 @@ export default class News extends Component {
             page: this.state.page - 1,
             totalResult: parseData.totalResults,
             nextDisabled: false,
-            loading: true
+            loading: false,
         });
     }
 
     handelNextClick = async () => {
+        this.setState({ loading: true });
         if (this.state.page + 1 > Math.ceil(this.state.totalResult / 10)) {
             this.setState({
                 nextDisabled: true,
@@ -65,13 +67,11 @@ export default class News extends Component {
         else {
             let data = await fetch(`https://newsapi.org/v2/top-headlines?country=in&category=${this.props.category}&apiKey=e5293d88a6d245d693060bf7c3442fce&page=${this.state.page + 1}&pageSize=10`);
             let parseData = await data.json();
-            console.log(parseData);
-            this.setState({ loading: true });
             this.setState({
                 articles: parseData.articles,
                 page: this.state.page + 1,
                 totalResult: parseData.totalResults,
-                loading: true
+                loading: false,
             });
         }
     }
@@ -82,9 +82,9 @@ export default class News extends Component {
                 <div className="container my-3">
                     <h1>News</h1>
 
-                    {/* {this.state.loading && <Loading/>} */}
+                    {this.state.loading && <Loading/>}
                     <div className='row'>
-                        {this.state.loading && this.state.articles.map((element) => {
+                        {this.state.articles.map((element) => {
                             return <div className="col-md-4" key={element.urlToImage}>
                                 <NewsItem
                                     title={element.title ? element.title : ""}

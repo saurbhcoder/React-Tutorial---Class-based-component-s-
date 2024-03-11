@@ -20,6 +20,9 @@ export default class App extends Component {
         <BrowserRouter>
           <Navbar />
           <Routes>
+            <Route exact path="/" element={<News country="in" category="general" />} />
+          </Routes>
+          <Routes>
             <Route exact path="/home" element={<News country="in" category="general" />} />
           </Routes>
           <Routes>
